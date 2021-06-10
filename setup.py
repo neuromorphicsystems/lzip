@@ -5,16 +5,6 @@ import setuptools
 import shutil
 import sys
 
-def build_ext_factory(parameters):
-    import setuptools.command.build_ext
-    class build_ext(setuptools.command.build_ext.build_ext):
-        def finalize_options(self):
-            setuptools.command.build_ext.build_ext.finalize_options(self)
-            builtins.__NUMPY_SETUP__ = False
-            import numpy
-            self.include_dirs.append(numpy.get_include())
-    return build_ext(parameters)
-
 with open('README.md') as file:
     long_description = file.read()
 
@@ -33,8 +23,6 @@ setuptools.setup(
     description='decompress lzip archives',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    setup_requires=['numpy'],
-    install_requires=['numpy'],
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
@@ -49,5 +37,4 @@ setuptools.setup(
             extra_link_args=extra_args,
             include_dirs=[],
             libraries=[]),
-    ],
-    cmdclass={'build_ext': build_ext_factory})
+    ])
