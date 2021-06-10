@@ -1,0 +1,4 @@
+include third_party/*.h
+include third_party/*.c
+include third_party/lzlib/lzlib.cpp
+include lzip.cpp
