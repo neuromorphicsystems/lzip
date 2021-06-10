@@ -1,6 +1,7 @@
 #include "third_party/lzlib/lzlib.h"
 #include <Python.h>
 #include <fstream>
+#include <memory>
 #include <string>
 #include <structmember.h>
 #include <vector>
