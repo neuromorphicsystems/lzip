@@ -28,11 +28,12 @@ setuptools.setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],
+    py_modules=['lzip'],
     ext_modules=[
         distutils.core.Extension(
-            'lzip',
+            'lzip_extension',
             language='cpp',
-            sources=['lzip.cpp', str(pathlib.Path('third_party') / 'lzlib' / 'lzlib.cpp')],
+            sources=['lzip_extension.cpp', str(pathlib.Path('third_party') / 'lzlib' / 'lzlib.cpp')],
             extra_compile_args=extra_args,
             extra_link_args=extra_args,
             include_dirs=[],
