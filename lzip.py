@@ -22,9 +22,10 @@ level_to_dictionary_size_and_match_len_limit = {
 
 
 class RemainingBytesError(Exception):
-    def __init__(self, word_size, bytes):
-        self.message = f'The total number of bytes is not a multiple of {word_size} ({len(bytes)} remaining)'
-        self.bytes = bytes
+    def __init__(self, word_size, buffer):
+        self.buffer = buffer
+        super().__init__(
+            f'The total number of bytes is not a multiple of {word_size} ({len(buffer)} remaining)')
 
 
 def decompress_file_like_iter(file_like, word_size=None, chunk_size=None):

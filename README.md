@@ -188,10 +188,10 @@ class BufferEncoder:
 
 ```py
 class RemainingBytesError(Exception):
-    def __init__(self, word_size, bytes):
+    def __init__(self, word_size, buffer):
         """
         Raised by decompress_* functions if the total number of bytes is not a multiple of word_size
-        The remaining bytes are stored in self.bytes
+        The remaining bytes are stored in self.buffer
         See 'Word size and remaining bytes' for details
         """
 ```
@@ -417,23 +417,61 @@ class Encoder:
 
 ## Word size and remaining bytes
 
-The size of each chunk is around 64 KiB and varies from one chunk to the next. To facilitate the parsing of files that use fixed-sized words, `decoder` takes an optional parameter `chunk_factor`. When this parameter is set, the size of each chunk remains variable but is guaranteed to be a multiple of `chunk_factor`. If the total size `n` of the uncompressed archive is not a multiple of `chunk_factor`, `lzip.RemainingBytesError` is raised after iterating over the last chunk.
+Decoding functions take an optional parameter `word_size` that defaults to `1`. Decoded buffers are guaranteed to contain a number of bytes that is a multiple of `word_size` to facilitate fixed-sized words parsing (for example `numpy.frombytes`). If the total size of the uncompressed archive is not a multiple of `word_size`, `lzip.RemainingBytesError` is raised after iterating over the last chunk. The raised exception provides access to the remaining bytes.
 
-The following example decodes the archive `'/path/to/archive.lz'` and converts the decoded bytes to 4-bytes unsigned integers:
+Non-iter decoding functions do not provide access to the decoded buffers if the total size is not a multiple of `word_size` (only the remaining bytes).
+
+The following example decodes a file and converts the decoded bytes to 4-bytes unsigned integers:
 ```py
 import lzip
 import numpy
 
 try:
-    for chunk in lzip.decoder('/path/to/archive.lz', 4):
+    for chunk in lzip.decompress_file_iter('/path/to/archive.lz', 4):
         values = numpy.frombuffer(chunk, dtype='<u4')
 except lzip.RemainingBytesError as error:
-    print(error) # prints 'RemainingBytesError: the total number of bytes is not a multiple of 4 (k remaining)'
-                 # where k is in [0, 3]
-    # the remaining bytes are stored in error.remaining_bytes
+    # this block is executed only if the number of bytes in '/path/to/archive.lz'
+    # is not a multiple of 4 (after decompression)
+    print(error) # prints 'The total number of bytes is not a multiple of 4 (k remaining)'
+                 # where k is in [1, 3]
+    # error.buffer is a bytes object and contains the k remaining bytes
 ```
 
 ## Default parameters
+
+The default parameters in `lzip` functions are not constants, despite what is presented in the documentation. The actual implementation looks like this:
+
+```py
+def some_function(some_parameter=None):
+    if some_parameter is None:
+        some_paramter = some_paramter_default_value
+```
+
+This approach makes it possible to change default values at the module level at any time. For example,
+
+```py
+import lzip
+
+lzip.compress_to_file('/path/to/output0.lz', b'data to compress') # encoded at level 6 (default)
+
+lzip.default_level = 9
+
+lzip.compress_to_file('/path/to/output1.lz', b'data to compress') # encoded at level 9
+lzip.compress_to_file('/path/to/output2.lz', b'data to compress') # encoded at level 9
+
+lzip_default_level = 0
+
+lzip.compress_to_file('/path/to/output1.lz', b'data to compress') # encoded at level 0
+```
+
+`lzip` exports the following *default* default values:
+
+```py
+default_level = 6
+default_word_size = 1
+default_chunk_size = 1 << 16
+default_member_size = 1 << 51
+```
 
 # Publish
 

@@ -15,8 +15,8 @@ try:
     for chunk in lzip.decompress_file_iter(dirname / 'test_data.lz', word_size=100):
         length += len(chunk)
 except lzip.RemainingBytesError as error:
-    assert len(error.bytes) == 54
-    length += len(error.bytes)
+    assert len(error.buffer) == 54
+    length += len(error.buffer)
 assert length == 254
 
 # decompress_file
@@ -27,8 +27,8 @@ length = 0
 try:
     length += lzip.decompress_file(dirname / 'test_data.lz', word_size=100)
 except lzip.RemainingBytesError as error:
-    assert len(error.bytes) == 54
-    length += len(error.bytes)
+    assert len(error.buffer) == 54
+    length += len(error.buffer)
 assert length == 54
 
 # decompress_buffer_iter
@@ -47,8 +47,8 @@ try:
     for chunk in lzip.decompress_buffer_iter(buffer, word_size=100):
         length += len(chunk)
 except lzip.RemainingBytesError as error:
-    assert len(error.bytes) == 54
-    length += len(error.bytes)
+    assert len(error.buffer) == 54
+    length += len(error.buffer)
 assert length == 254
 
 # decompress_buffer
@@ -63,8 +63,8 @@ length = 0
 try:
     length += lzip.decompress_buffer(buffer, word_size=100)
 except lzip.RemainingBytesError as error:
-    assert len(error.bytes) == 54
-    length += len(error.bytes)
+    assert len(error.buffer) == 54
+    length += len(error.buffer)
 assert length == 54
 
 # decompress_url_iter
@@ -79,8 +79,8 @@ try:
     for chunk in lzip.decompress_url_iter((dirname / 'test_data.lz').as_uri(), word_size=100):
         length += len(chunk)
 except lzip.RemainingBytesError as error:
-    assert len(error.bytes) == 54
-    length += len(error.bytes)
+    assert len(error.buffer) == 54
+    length += len(error.buffer)
 assert length == 254
 
 # decompress_url
@@ -92,8 +92,8 @@ try:
     length += lzip.decompress_url((dirname /
                                   'test_data.lz').as_uri(), word_size=100)
 except lzip.RemainingBytesError as error:
-    assert len(error.bytes) == 54
-    length += len(error.bytes)
+    assert len(error.buffer) == 54
+    length += len(error.buffer)
 assert length == 54
 
 # BufferEncoder
