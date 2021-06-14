@@ -1,8 +1,6 @@
-import builtins
 import distutils.core
 import pathlib
 import setuptools
-import shutil
 import sys
 
 with open('README.md') as file:
@@ -12,7 +10,7 @@ extra_args = []
 if sys.platform == 'linux':
     extra_args += ['-std=c++11']
 elif sys.platform == 'darwin':
-    extra_args += ['-std=c++11','-stdlib=libc++']
+    extra_args += ['-std=c++11', '-stdlib=libc++']
 
 setuptools.setup(
     name='lzip',
@@ -33,7 +31,8 @@ setuptools.setup(
         distutils.core.Extension(
             'lzip_extension',
             language='cpp',
-            sources=['lzip_extension.cpp', str(pathlib.Path('third_party') / 'lzlib' / 'lzlib.cpp')],
+            sources=['lzip_extension.cpp', str(
+                pathlib.Path('third_party') / 'lzlib' / 'lzlib.cpp')],
             extra_compile_args=extra_args,
             extra_link_args=extra_args,
             include_dirs=[],

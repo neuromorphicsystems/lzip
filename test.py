@@ -116,7 +116,7 @@ assert len(lzip.compress_to_buffer(buffer)) == 198
 with open(dirname / 'test_data', 'rb') as input_file:
     buffer = input_file.read()
 with tempfile.TemporaryDirectory() as temporary_directory:
-    path = pathlib.Path(temporary_directory)  / 'test_data.lz'
+    path = pathlib.Path(temporary_directory) / 'test_data.lz'
     with lzip.FileEncoder(path) as encoder:
         encoder.compress(buffer[:100])
         encoder.compress(buffer[100:200])
@@ -128,7 +128,7 @@ with tempfile.TemporaryDirectory() as temporary_directory:
 with open(dirname / 'test_data', 'rb') as input_file:
     buffer = input_file.read()
 with tempfile.TemporaryDirectory() as temporary_directory:
-    path = pathlib.Path(temporary_directory)  / 'test_data.lz'
+    path = pathlib.Path(temporary_directory) / 'test_data.lz'
     lzip.compress_to_file(path, buffer)
     with open(path, 'rb') as encoded_file:
         assert len(encoded_file.read()) == 198
