@@ -3,6 +3,7 @@ import lzip_extension
 import socket
 import urllib.request
 
+default_level = 6
 default_word_size = 1
 default_chunk_size = 1 << 16
 default_member_size = 1 << 51
@@ -84,7 +85,9 @@ def decompress_url(url, data=None, timeout=None, cafile=None, capath=None, conte
 
 
 class BufferEncoder:
-    def __init__(self, level=6, member_size=None):
+    def __init__(self, level=None, member_size=None):
+        if level is None:
+            level = default_level
         assert isinstance(level, (list, tuple, int))
         if isinstance(level, (list, tuple)):
             assert len(level) == 2
@@ -109,7 +112,9 @@ class BufferEncoder:
         return result
 
 
-def compress_to_buffer(buffer, level=6, member_size=None):
+def compress_to_buffer(buffer, level=None, member_size=None):
+    if level is None:
+        level = default_level
     encoder = BufferEncoder(level, member_size)
     result = encoder.compress(buffer)
     result += encoder.finish()
@@ -117,7 +122,9 @@ def compress_to_buffer(buffer, level=6, member_size=None):
 
 
 class FileEncoder:
-    def __init__(self, path, level=6, member_size=None):
+    def __init__(self, path, level=None, member_size=None):
+        if level is None:
+            level = default_level
         assert isinstance(level, (list, tuple, int))
         if isinstance(level, (list, tuple)):
             assert len(level) == 2
@@ -151,6 +158,8 @@ class FileEncoder:
         return type is None
 
 
-def compress_to_file(path, buffer, level=6, member_size=None):
+def compress_to_file(path, buffer, level=None, member_size=None):
+    if level is None:
+        level = default_level
     with FileEncoder(path, level, member_size) as encoder:
         encoder.compress(buffer)
