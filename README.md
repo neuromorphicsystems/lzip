@@ -337,9 +337,83 @@ def decompress_url_iter(
 
 ## lzip_extension
 
+Even though `lzip_extension` behaves like a conventional Python module, it is written in C++. To keep the implementation simple, only positional arguments are supported (keyword arguments do not work). The Python classes documented below are equivalent to the classes exported by this low-level implementation.
+
+You can use `lzip_extension` by importing it like any other module. *lzip.py* uses it extensively.
+
 ### Decoder
 
+```py
+class Decoder:
+    def __init__(self, word_size=1):
+        """
+        Decode sequential byte buffers and return the decompressed bytes as in-memory buffers
+        - word_size is a non-zero positive integer
+          all the output buffers contain a number of bytes that is a multiple of word_size
+        """
+
+    def decompress(self, buffer):
+        """
+        Decode a buffer and return the decompressed bytes as an in-memory buffer
+        - buffer must be a byte-like object, such as bytes or a bytearray
+        This function returns a bytes object
+
+        The compression algorithm may decide to buffer part or all of the data,
+        hence the relationship between input (compressed) buffers and
+        output (decompressed) buffers is not one-to-one
+        In particular, the returned buffer can be empty (b'') even if the input buffer is not
+        """
+
+    def finish(self):
+        """
+        Flush the encoder contents
+        This function returns a tuple (buffer, remaining_bytes)
+          Both buffer and remaining_bytes and bytes objects
+          buffer should be empty (b'') unless the file was truncated
+          remaining_bytes is empty (b'') unless the total number of bytes decoded
+          is not a multiple of word_size
+
+        decompress must not be called after calling finish
+        Failing to call finish delays garbage collection which can be an issue
+        when decoding many files in a row, and prevents the algorithm from detecting
+        remaining bytes (if the size is not a multiple of word_size)
+        """
+```
+
 ### Encoder
+
+```py
+class Encoder:
+    def __init__(self, dictionary_size=(1 << 23), match_len_limit=36, member_size=(1 << 51)):
+        """
+        Encode sequential byte buffers and return the compressed bytes as in-memory buffers
+        - dictionary_size is an integer in the range [(1 << 12), (1 << 29)]
+        - match_len_limit is an integer in the range [5, 273]
+        - member_size is an integer in the range [(1 << 12), (1 << 51)]
+        """
+
+    def compress(self, buffer):
+        """
+        Encode a buffer and return the compressed bytes as an in-memory buffer
+        - buffer must be a byte-like object, such as bytes or a bytearray
+        This function returns a bytes object
+
+        The compression algorithm may decide to buffer part or all of the data,
+        hence the relationship between input (decompressed) buffers and
+        output (compressed) buffers is not one-to-one
+        In particular, the returned buffer can be empty (b'') even if the input buffer is not
+        """
+
+    def finish(self):
+        """
+        Flush the encoder contents
+        This function returns a bytes object
+
+        compress must not be called after calling finish
+        Failing to call finish results in corrupted encoded buffers
+        """
+```
+
 
 ## Word size and remaining bytes
 

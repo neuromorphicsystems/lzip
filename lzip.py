@@ -91,13 +91,12 @@ class BufferEncoder:
         assert isinstance(level, (list, tuple, int))
         if isinstance(level, (list, tuple)):
             assert len(level) == 2
-            assert level[0] >= (1 << 12) and level[0] < (1 << 29)
-            assert level[1] >= 5 and level[1] <= 273
-            dictionary_size, match_len_limit = level
         else:
             assert level >= 0 and level < 10
-            dictionary_size, match_len_limit = level_to_dictionary_size_and_match_len_limit[
-                level]
+            level = level_to_dictionary_size_and_match_len_limit[level]
+        assert isinstance(level[0], int) and level[0] >= (1 << 12) and level[0] < (1 << 29)
+        assert isinstance(level[1], int) and level[1] >= 5 and level[1] <= 273
+        dictionary_size, match_len_limit = level
         if member_size is None:
             member_size = default_member_size
         self.encoder = lzip_extension.Encoder(

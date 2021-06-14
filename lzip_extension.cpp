@@ -22,7 +22,7 @@ struct decoder {
     LZ_Decoder* lz_decoder;
     std::vector<uint8_t> decoded_buffer;
 };
-void decoder_consume_all(decoder* current) {
+static void decoder_consume_all(decoder* current) {
     for (;;) {
         const auto previous_size = current->decoded_buffer.size();
         const auto free_space = std::max(internal_buffer_size, LZ_decompress_dictionary_size(current->lz_decoder));
@@ -44,7 +44,7 @@ void decoder_consume_all(decoder* current) {
         current->decoded_buffer.resize(previous_size + decoded_bytes_read);
     }
 }
-PyObject* full_packets_bytes(decoder* current) {
+static PyObject* full_packets_bytes(decoder* current) {
     const auto full_packets_size = (current->decoded_buffer.size() / current->word_size) * current->word_size;
     if (full_packets_size > 0) {
         auto bytes = PyBytes_FromStringAndSize(
@@ -81,6 +81,7 @@ static PyObject* decoder_decompress(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "y*", &buffer)) {
         return nullptr;
     }
+    auto thread_state = PyEval_SaveThread();
     auto current = reinterpret_cast<decoder*>(self);
     try {
         if (!current->lz_decoder) {
@@ -98,13 +99,16 @@ static PyObject* decoder_decompress(PyObject* self, PyObject* args) {
             decoder_consume_all(current);
             offset += size;
         }
+        PyEval_RestoreThread(thread_state);
         return full_packets_bytes(current);
     } catch (const std::exception& exception) {
+        PyEval_RestoreThread(thread_state);
         PyErr_SetString(PyExc_RuntimeError, exception.what());
     }
     return nullptr;
 }
 static PyObject* decoder_finish(PyObject* self, PyObject*) {
+    auto thread_state = PyEval_SaveThread();
     auto current = reinterpret_cast<decoder*>(self);
     try {
         if (!current->lz_decoder) {
@@ -114,6 +118,7 @@ static PyObject* decoder_finish(PyObject* self, PyObject*) {
             throw_lz_error(current->lz_decoder);
         }
         decoder_consume_all(current);
+        PyEval_RestoreThread(thread_state);
         auto result = PyTuple_New(2);
         PyTuple_SET_ITEM(result, 0, full_packets_bytes(current));
         PyTuple_SET_ITEM(
@@ -130,6 +135,7 @@ static PyObject* decoder_finish(PyObject* self, PyObject*) {
         current->lz_decoder = nullptr;
         return result;
     } catch (const std::exception& exception) {
+        PyEval_RestoreThread(thread_state);
         PyErr_SetString(PyExc_RuntimeError, exception.what());
     }
     return nullptr;
@@ -211,6 +217,7 @@ static PyObject* encoder_compress(PyObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "y*", &buffer)) {
         return nullptr;
     }
+    auto thread_state = PyEval_SaveThread();
     auto current = reinterpret_cast<encoder*>(self);
     try {
         if (!current->lz_encoder) {
@@ -228,18 +235,21 @@ static PyObject* encoder_compress(PyObject* self, PyObject* args) {
             encoder_consume_all(current);
             offset += size;
         }
+        PyEval_RestoreThread(thread_state);
         auto result = PyBytes_FromStringAndSize(
             reinterpret_cast<const char*>(current->encoded_buffer.data()),
             static_cast<Py_ssize_t>(current->encoded_buffer.size()));
         current->encoded_buffer.clear();
         return result;
     } catch (const std::exception& exception) {
+        PyEval_RestoreThread(thread_state);
         PyErr_SetString(PyExc_RuntimeError, exception.what());
     }
     return nullptr;
 }
 static PyObject* encoder_finish(PyObject* self, PyObject*) {
     auto current = reinterpret_cast<encoder*>(self);
+    auto thread_state = PyEval_SaveThread();
     try {
         if (!current->lz_encoder) {
             throw std::runtime_error("finish called twice");
@@ -248,6 +258,7 @@ static PyObject* encoder_finish(PyObject* self, PyObject*) {
             throw_lz_error(current->lz_encoder);
         }
         encoder_consume_all(current);
+        PyEval_RestoreThread(thread_state);
         auto result = PyBytes_FromStringAndSize(
             reinterpret_cast<const char*>(current->encoded_buffer.data()),
             static_cast<Py_ssize_t>(current->encoded_buffer.size()));
@@ -259,6 +270,7 @@ static PyObject* encoder_finish(PyObject* self, PyObject*) {
         current->lz_encoder = nullptr;
         return result;
     } catch (const std::exception& exception) {
+        PyEval_RestoreThread(thread_state);
         PyErr_SetString(PyExc_RuntimeError, exception.what());
     }
     return nullptr;
