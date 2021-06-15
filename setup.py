@@ -6,11 +6,14 @@ import sys
 with open('README.md') as file:
     long_description = file.read()
 
-extra_args = []
+extra_compile_args = []
+extra_link_args = []
 if sys.platform == 'linux':
-    extra_args += ['-std=c++11']
+    extra_compile_args += ['-std=c++11']
+    extra_link_args += ['-std=c++11', '-ldl']
 elif sys.platform == 'darwin':
-    extra_args += ['-std=c++11', '-stdlib=libc++']
+    extra_compile_args += ['-std=c++11', '-stdlib=libc++']
+    extra_link_args += ['-std=c++11', '-stdlib=libc++']
 
 setuptools.setup(
     name='lzip',
@@ -33,8 +36,8 @@ setuptools.setup(
             language='cpp',
             sources=['lzip_extension.cpp', str(
                 pathlib.Path('third_party') / 'lzlib' / 'lzlib.cpp')],
-            extra_compile_args=extra_args,
-            extra_link_args=extra_args,
+            extra_compile_args=extra_compile_args,
+            extra_link_args=extra_link_args,
             include_dirs=[],
             libraries=[]),
     ])
