@@ -115,6 +115,7 @@ The present package contains two libraries. `lzip` deals with high-level operati
   - [Encoder](#encoder)
 - [Word size and remaining bytes](word-size-and-remaining-bytes)
 - [Default parameters](default-paramters)
+- [Compare options](compare-options)
 
 ## lzip
 
@@ -414,6 +415,16 @@ class Encoder:
         """
 ```
 
+## Compare options
+
+The script *compare_options.py* uses the `lzip` library to compare the compression ratio of different pairs (dictionary_size, match_len_limit). It runs multiple compressions in parallel and does not store the compressed bytes. About 3 GB of RAM are required to run the script. Processing time depends on the file size and the number of processors on the machine.
+
+The script requires matplotlib (`pip3 install matplotlib`) to display the results.
+
+```sh
+python3 compare_options /path/to/uncompressed/file [--chunk-size=65536]
+```
+
 
 ## Word size and remaining bytes
 
@@ -447,8 +458,7 @@ def some_function(some_parameter=None):
         some_paramter = some_paramter_default_value
 ```
 
-This approach makes it possible to change default values at the module level at any time. For example,
-
+This approach makes it possible to change default values at the module level at any time. For example:
 ```py
 import lzip
 
