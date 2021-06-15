@@ -21,7 +21,7 @@ setuptools.setup(
     url='https://github.com/neuromorphicsystems/lzip',
     author='Alexandre Marcireau',
     author_email='alexandre.marcireau@gmail.com',
-    description='decompress lzip archives',
+    description='Lzip (.lz) archives compression and decompression with buffers and URLs support',
     long_description=long_description,
     long_description_content_type='text/markdown',
     classifiers=[
