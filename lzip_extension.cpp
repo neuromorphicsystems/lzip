@@ -2,6 +2,7 @@
 #include <Python.h>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <structmember.h>
 #include <vector>
