@@ -17,7 +17,7 @@ elif sys.platform == 'darwin':
 
 setuptools.setup(
     name='lzip',
-    version='1.0.0',
+    version='1.0.1',
     url='https://github.com/neuromorphicsystems/lzip',
     author='Alexandre Marcireau',
     author_email='alexandre.marcireau@gmail.com',
