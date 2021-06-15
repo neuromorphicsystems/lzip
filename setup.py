@@ -10,7 +10,7 @@ extra_compile_args = []
 extra_link_args = []
 if sys.platform == 'linux':
     extra_compile_args += ['-std=c++11']
-    extra_link_args += ['-std=c++11', '-ldl']
+    extra_link_args += ['-std=c++11', '-lstdc++']
 elif sys.platform == 'darwin':
     extra_compile_args += ['-std=c++11', '-stdlib=libc++']
     extra_link_args += ['-std=c++11', '-stdlib=libc++']
