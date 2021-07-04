@@ -491,7 +491,7 @@ default_member_size = 1 << 51
 ```sh
 cd cubuzoa
 python3 cubuzoa.py provision
-python3 cubuzoa.py build /path/to/event_stream
+python3 cubuzoa.py build /path/to/lzip
 ```
 
 3. Install twine
