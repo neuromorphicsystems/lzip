@@ -14,27 +14,27 @@ Compress an in-memory buffer and write it to a file:
 ```py
 import lzip
 
-lzip.compress_to_file('/path/to/output.lz', b'data to compress')
+lzip.compress_to_file("/path/to/output.lz", b"data to compress")
 ```
 
 Compress multiple chunks and write the result to a single file (useful to avoid large in-memory buffers):
 ```py
 import lzip
 
-with lzip.FileEncoder('/path/to/output.lz') as encoder:
-    encoder.compress(b'data')
-    encoder.compress(b' to')
-    encoder.compress(b' compress')
+with lzip.FileEncoder("/path/to/output.lz") as encoder:
+    encoder.compress(b"data")
+    encoder.compress(b" to")
+    encoder.compress(b" compress")
 ```
 
 Use `FileEncoder` without context management (`with`):
 ```py
 import lzip
 
-encoder = lzip.FileEncoder('/path/to/output.lz')
-encoder.compress(b'data')
-encoder.compress(b' to')
-encoder.compress(b' compress')
+encoder = lzip.FileEncoder("/path/to/output.lz")
+encoder.compress(b"data")
+encoder.compress(b" to")
+encoder.compress(b" compress")
 encoder.close()
 ```
 
@@ -43,9 +43,9 @@ Compress a Numpy array and write the result to a file:
 import lzip
 import numpy
 
-values = numpy.arange(100, dtype='<u4')
+values = numpy.arange(100, dtype="<u4")
 
-lzip.compress_to_file('/path/to/output.lz', values.tobytes())
+lzip.compress_to_file("/path/to/output.lz", values.tobytes())
 ```
 
 `lzip` can use different compression levels. See the [documentation](#documentation) below for details.
@@ -56,14 +56,14 @@ Read and decompress a file to an in-memory buffer:
 ```py
 import lzip
 
-buffer = lzip.decompress_file('/path/to/input.lz')
+buffer = lzip.decompress_file("/path/to/input.lz")
 ```
 
 Read and decompress a file one chunk at a time (useful for large files):
 ```py
 import lzip
 
-for chunk in lzip.decompress_file_iter('/path/to/input.lz'):
+for chunk in lzip.decompress_file_iter("/path/to/input.lz"):
     # chunk is a bytes object
 ```
 
@@ -72,8 +72,8 @@ Read and decompress a file one chunk at a time, and ensure that each chunk conta
 import lzip
 import numpy
 
-for chunk in lzip.decompress_file_iter('/path/to/input.lz', word_size=4):
-    values = numpy.frombuffer(chunk, dtype='<u4')
+for chunk in lzip.decompress_file_iter("/path/to/input.lz", word_size=4):
+    values = numpy.frombuffer(chunk, dtype="<u4")
 ```
 
 Download and decompress data from a URL:
@@ -81,10 +81,10 @@ Download and decompress data from a URL:
 import lzip
 
 # option 1: store the whole decompressed file in a single buffer
-buffer = lzip.decompress_url('http://download.savannah.gnu.org/releases/lzip/lzip-1.22.tar.lz')
+buffer = lzip.decompress_url("http://download.savannah.gnu.org/releases/lzip/lzip-1.22.tar.lz")
 
 # option 2: iterate over the decompressed file in small chunks
-for chunk in lzip.decompress_url_iter('http://download.savannah.gnu.org/releases/lzip/lzip-1.22.tar.lz'):
+for chunk in lzip.decompress_url_iter("http://download.savannah.gnu.org/releases/lzip/lzip-1.22.tar.lz"):
     # chunk is a bytes object
 ```
 
@@ -172,7 +172,7 @@ class BufferEncoder:
         The compression algorithm may decide to buffer part or all of the data,
         hence the relationship between input (non-compressed) buffers and
         output (conpressed) buffers is not one-to-one
-        In particular, the returned buffer can be empty (b'') even if the input buffer is not
+        In particular, the returned buffer can be empty (b"") even if the input buffer is not
         """
 
     def finish(self):
@@ -193,7 +193,7 @@ class RemainingBytesError(Exception):
         """
         Raised by decompress_* functions if the total number of bytes is not a multiple of word_size
         The remaining bytes are stored in self.buffer
-        See 'Word size and remaining bytes' for details
+        See "Word size and remaining bytes" for details
         """
 ```
 
@@ -230,7 +230,7 @@ def decompress_buffer(buffer, word_size=1):
     """
     Decode a single buffer and return the decompressed bytes as an in-memory buffer
     - buffer must be a byte-like object, such as bytes or a bytearray
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     This function returns a bytes object
     """
 ```
@@ -242,7 +242,7 @@ def decompress_buffer_iter(buffer, word_size=1):
     """
     Decode a single buffer and return an in-memory buffer iterator
     - buffer must be a byte-like object, such as bytes or a bytearray
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     This function returns a bytes object iterator
     """
 ```
@@ -254,7 +254,7 @@ def decompress_file(path, word_size=1, chunk_size=(1 << 16)):
     """
     Read and decode a file and return the decompressed bytes as an in-memory buffer
     - path is the input file name, it must be a path-like object such as a string or a pathlib path
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     - chunk_size: the number of bytes to read from the file at once
       large values increase memory usage but very small values impede performance
     This function returns a bytes object
@@ -268,7 +268,7 @@ def decompress_file_iter(path, word_size=1, chunk_size=(1 << 16)):
     """
     Read and decode a file and return an in-memory buffer iterator
     - path is the input file name, it must be a path-like object such as a string or a pathlib path
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     - chunk_size: see decompress_file
     This function returns a bytes object iterator
     """
@@ -281,7 +281,7 @@ def decompress_file_like(file_like, word_size=1, chunk_size=(1 << 16)):
     """
     Read and decode a file-like object and return the decompressed bytes as an in-memory buffer
     - file_like is a file-like object, such as a file or a HTTP response
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     - chunk_size: see decompress_file
     This function returns a bytes object
     """
@@ -294,7 +294,7 @@ def decompress_file_like_iter(file_like, word_size=1, chunk_size=(1 << 16)):
     """
     Read and decode a file-like object and return an in-memory buffer iterator
     - file_like is a file-like object, such as a file or a HTTP response
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     - chunk_size: see decompress_file
     This function returns a bytes object iterator
     """
@@ -312,7 +312,7 @@ def decompress_url(
     - url must be a string or a urllib.Request object
     - data, timeout, cafile, capath and context are passed to urllib.request.urlopen
       see https://docs.python.org/3/library/urllib.request.html for details
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     - chunk_size: see decompress_file
     This function returns a bytes object
     """
@@ -330,7 +330,7 @@ def decompress_url_iter(
     - url must be a string or a urllib.Request object
     - data, timeout, cafile, capath and context are passed to urllib.request.urlopen
       see https://docs.python.org/3/library/urllib.request.html for details
-    - word_size: see 'Word size and remaining bytes'
+    - word_size: see "Word size and remaining bytes"
     - chunk_size: see decompress_file
     This function returns a bytes object iterator
     """
@@ -362,7 +362,7 @@ class Decoder:
         The compression algorithm may decide to buffer part or all of the data,
         hence the relationship between input (compressed) buffers and
         output (decompressed) buffers is not one-to-one
-        In particular, the returned buffer can be empty (b'') even if the input buffer is not
+        In particular, the returned buffer can be empty (b"") even if the input buffer is not
         """
 
     def finish(self):
@@ -370,8 +370,8 @@ class Decoder:
         Flush the encoder contents
         This function returns a tuple (buffer, remaining_bytes)
           Both buffer and remaining_bytes and bytes objects
-          buffer should be empty (b'') unless the file was truncated
-          remaining_bytes is empty (b'') unless the total number of bytes decoded
+          buffer should be empty (b"") unless the file was truncated
+          remaining_bytes is empty (b"") unless the total number of bytes decoded
           is not a multiple of word_size
 
         decompress must not be called after calling finish
@@ -402,7 +402,7 @@ class Encoder:
         The compression algorithm may decide to buffer part or all of the data,
         hence the relationship between input (decompressed) buffers and
         output (compressed) buffers is not one-to-one
-        In particular, the returned buffer can be empty (b'') even if the input buffer is not
+        In particular, the returned buffer can be empty (b"") even if the input buffer is not
         """
 
     def finish(self):
@@ -438,12 +438,12 @@ import lzip
 import numpy
 
 try:
-    for chunk in lzip.decompress_file_iter('/path/to/archive.lz', 4):
-        values = numpy.frombuffer(chunk, dtype='<u4')
+    for chunk in lzip.decompress_file_iter("/path/to/archive.lz", 4):
+        values = numpy.frombuffer(chunk, dtype="<u4")
 except lzip.RemainingBytesError as error:
-    # this block is executed only if the number of bytes in '/path/to/archive.lz'
+    # this block is executed only if the number of bytes in "/path/to/archive.lz"
     # is not a multiple of 4 (after decompression)
-    print(error) # prints 'The total number of bytes is not a multiple of 4 (k remaining)'
+    print(error) # prints "The total number of bytes is not a multiple of 4 (k remaining)"
                  # where k is in [1, 3]
     # error.buffer is a bytes object and contains the k remaining bytes
 ```
@@ -462,16 +462,16 @@ This approach makes it possible to change default values at the module level at 
 ```py
 import lzip
 
-lzip.compress_to_file('/path/to/output0.lz', b'data to compress') # encoded at level 6 (default)
+lzip.compress_to_file("/path/to/output0.lz", b"data to compress") # encoded at level 6 (default)
 
 lzip.default_level = 9
 
-lzip.compress_to_file('/path/to/output1.lz', b'data to compress') # encoded at level 9
-lzip.compress_to_file('/path/to/output2.lz', b'data to compress') # encoded at level 9
+lzip.compress_to_file("/path/to/output1.lz", b"data to compress") # encoded at level 9
+lzip.compress_to_file("/path/to/output2.lz", b"data to compress") # encoded at level 9
 
 lzip_default_level = 0
 
-lzip.compress_to_file('/path/to/output1.lz', b'data to compress') # encoded at level 0
+lzip.compress_to_file("/path/to/output1.lz", b"data to compress") # encoded at level 0
 ```
 
 `lzip` exports the following *default* default values:
