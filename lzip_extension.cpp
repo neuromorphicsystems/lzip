@@ -92,7 +92,8 @@ static PyObject* decoder_decompress(PyObject* self, PyObject* args) {
             const auto size =
                 std::min(static_cast<int32_t>(buffer.len - offset), LZ_decompress_write_size(current->lz_decoder));
             if (size > 0) {
-                if (LZ_decompress_write(current->lz_decoder, reinterpret_cast<uint8_t*>(buffer.buf), size) != size) {
+                if (LZ_decompress_write(current->lz_decoder, reinterpret_cast<uint8_t*>(buffer.buf) + offset, size)
+                    != size) {
                     throw_lz_error(current->lz_decoder);
                     throw std::runtime_error("the LZ decoder did not consume all the bytes");
                 }
@@ -228,7 +229,8 @@ static PyObject* encoder_compress(PyObject* self, PyObject* args) {
             const auto size =
                 std::min(static_cast<int32_t>(buffer.len - offset), LZ_compress_write_size(current->lz_encoder));
             if (size > 0) {
-                if (LZ_compress_write(current->lz_encoder, reinterpret_cast<uint8_t*>(buffer.buf), size) != size) {
+                if (LZ_compress_write(current->lz_encoder, reinterpret_cast<uint8_t*>(buffer.buf) + offset, size)
+                    != size) {
                     throw_lz_error(current->lz_encoder);
                     throw std::runtime_error("the LZ encoder did not consume all the bytes");
                 }
