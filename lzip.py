@@ -10,7 +10,7 @@ default_level: int = 6
 default_word_size: int = 1
 default_chunk_size: int = 1 << 16
 default_member_size: int = 1 << 51
-level_to_dictionary_size_and_match_len_limit: dict[int, tuple[int, int]] = {
+level_to_dictionary_size_and_match_len_limit = {
     0: (65535, 16),
     1: (1 << 20, 5),
     2: (3 << 19, 6),
@@ -32,7 +32,7 @@ class RemainingBytesError(Exception):
 
 def decompress_file_like_iter(
     file_like, word_size: typing.Optional[int] = None, chunk_size: typing.Optional[int] = None
-) -> collections.abc.Iterator[bytes]:
+):
     if word_size is None:
         word_size = default_word_size
     if chunk_size is None:
@@ -57,7 +57,7 @@ def decompress_file_like(file_like, word_size=None, chunk_size=None) -> bytes:
     return b"".join(buffer for buffer in decompress_file_like_iter(file_like, word_size, chunk_size))
 
 
-def decompress_file_iter(path, word_size=None, chunk_size=None) -> collections.abc.Iterator[bytes]:
+def decompress_file_iter(path, word_size=None, chunk_size=None):
     with open(path, "rb") as input_file:
         yield from decompress_file_like_iter(input_file, word_size, chunk_size)
 
@@ -67,7 +67,7 @@ def decompress_file(path, word_size=None, chunk_size=None) -> bytes:
         return decompress_file_like(input_file, word_size, chunk_size)
 
 
-def decompress_buffer_iter(buffer, word_size=None) -> collections.abc.Iterator[bytes]:
+def decompress_buffer_iter(buffer, word_size=None):
     yield from decompress_file_like_iter(io.BytesIO(buffer), word_size, chunk_size=len(buffer))
 
 
@@ -77,7 +77,7 @@ def decompress_buffer(buffer, word_size=None) -> bytes:
 
 def decompress_url_iter(
     url, data=None, timeout=None, cafile=None, capath=None, context=None, word_size=None, chunk_size=None
-) -> collections.abc.Iterator[bytes]:
+):
     if timeout is None:
         timeout = socket._GLOBAL_DEFAULT_TIMEOUT
     with urllib.request.urlopen(url, data, timeout, cafile=cafile, capath=capath, context=context) as response:
