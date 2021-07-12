@@ -65,6 +65,10 @@ static PyObject* full_packets_bytes(decoder* current) {
 }
 static void decoder_dealloc(PyObject* self) {
     auto current = reinterpret_cast<decoder*>(self);
+    {
+        std::vector<uint8_t> empty;
+        current->decoded_buffer.swap(empty);
+    }
     if (current->lz_decoder) {
         LZ_decompress_close(current->lz_decoder);
         current->lz_decoder = nullptr;
@@ -102,9 +106,11 @@ static PyObject* decoder_decompress(PyObject* self, PyObject* args) {
             offset += size;
         }
         PyEval_RestoreThread(thread_state);
+        PyBuffer_Release(&buffer);
         return full_packets_bytes(current);
     } catch (const std::exception& exception) {
         PyEval_RestoreThread(thread_state);
+        PyBuffer_Release(&buffer);
         PyErr_SetString(PyExc_RuntimeError, exception.what());
     }
     return nullptr;
@@ -202,6 +208,10 @@ void encoder_consume_all(encoder* current) {
 }
 static void encoder_dealloc(PyObject* self) {
     auto current = reinterpret_cast<encoder*>(self);
+    {
+        std::vector<uint8_t> empty;
+        current->encoded_buffer.swap(empty);
+    }
     if (current->lz_encoder) {
         LZ_compress_close(current->lz_encoder);
         current->lz_encoder = nullptr;
@@ -239,6 +249,7 @@ static PyObject* encoder_compress(PyObject* self, PyObject* args) {
             offset += size;
         }
         PyEval_RestoreThread(thread_state);
+        PyBuffer_Release(&buffer);
         auto result = PyBytes_FromStringAndSize(
             reinterpret_cast<const char*>(current->encoded_buffer.data()),
             static_cast<Py_ssize_t>(current->encoded_buffer.size()));
@@ -246,6 +257,7 @@ static PyObject* encoder_compress(PyObject* self, PyObject* args) {
         return result;
     } catch (const std::exception& exception) {
         PyEval_RestoreThread(thread_state);
+        PyBuffer_Release(&buffer);
         PyErr_SetString(PyExc_RuntimeError, exception.what());
     }
     return nullptr;
