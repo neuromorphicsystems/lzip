@@ -1,5 +1,5 @@
-include third_party/*.h
-include third_party/*.c
+include third_party/lzlib/*.h
+include third_party/lzlib/*.c
 include third_party/lzlib/lzlib.cpp
 include lzip_extension.cpp
 include lzip.py

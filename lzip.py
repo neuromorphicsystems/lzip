@@ -1,10 +1,9 @@
-import collections
 import io
 import pathlib
-import lzip_extension
 import socket
 import typing
 import urllib.request
+import lzip_extension
 
 default_level: int = 6
 default_word_size: int = 1
