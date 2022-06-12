@@ -15,9 +15,10 @@ elif sys.platform == "darwin":
     extra_compile_args += ["-std=c++11", "-stdlib=libc++"]
     extra_link_args += ["-std=c++11", "-stdlib=libc++"]
 
+exec(open("version.py").read())
 setuptools.setup(
     name="lzip",
-    version="1.0.4",
+    version=__version__,  # type: ignore
     url="https://github.com/neuromorphicsystems/lzip",
     author="Alexandre Marcireau",
     author_email="alexandre.marcireau@gmail.com",
@@ -30,11 +31,14 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     py_modules=["lzip"],
-    ext_modules=[
+    ext_modules=[  # type: ignore
         distutils.core.Extension(
             "lzip_extension",
             language="cpp",
-            sources=["lzip_extension.cpp", str(pathlib.Path("third_party") / "lzlib" / "lzlib.cpp")],
+            sources=[
+                "lzip_extension.cpp",
+                str(pathlib.Path("third_party") / "lzlib" / "lzlib.cpp"),
+            ],
             extra_compile_args=extra_compile_args,
             extra_link_args=extra_link_args,
             include_dirs=[],

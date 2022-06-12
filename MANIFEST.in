@@ -3,3 +3,4 @@ include third_party/lzlib/*.c
 include third_party/lzlib/lzlib.cpp
 include lzip_extension.cpp
 include lzip.py
+include version.py

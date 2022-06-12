@@ -11,6 +11,7 @@ pip3 install lzip
 ## Compress
 
 Compress an in-memory buffer and write it to a file:
+
 ```py
 import lzip
 
@@ -18,6 +19,7 @@ lzip.compress_to_file("/path/to/output.lz", b"data to compress")
 ```
 
 Compress multiple chunks and write the result to a single file (useful to avoid large in-memory buffers):
+
 ```py
 import lzip
 
@@ -28,6 +30,7 @@ with lzip.FileEncoder("/path/to/output.lz") as encoder:
 ```
 
 Use `FileEncoder` without context management (`with`):
+
 ```py
 import lzip
 
@@ -39,6 +42,7 @@ encoder.close()
 ```
 
 Compress a Numpy array and write the result to a file:
+
 ```py
 import lzip
 import numpy
@@ -53,6 +57,7 @@ lzip.compress_to_file("/path/to/output.lz", values.tobytes())
 ## Decompress
 
 Read and decompress a file to an in-memory buffer:
+
 ```py
 import lzip
 
@@ -60,6 +65,7 @@ buffer = lzip.decompress_file("/path/to/input.lz")
 ```
 
 Read and decompress a file one chunk at a time (useful for large files):
+
 ```py
 import lzip
 
@@ -68,6 +74,7 @@ for chunk in lzip.decompress_file_iter("/path/to/input.lz"):
 ```
 
 Read and decompress a file one chunk at a time, and ensure that each chunk contains a number of bytes that is a multiple of `word_size` (useful to parse numpy arrays with a known dtype):
+
 ```py
 import lzip
 import numpy
@@ -77,6 +84,7 @@ for chunk in lzip.decompress_file_iter("/path/to/input.lz", word_size=4):
 ```
 
 Download and decompress data from a URL:
+
 ```py
 import lzip
 
@@ -96,26 +104,31 @@ The present package contains two libraries. `lzip` deals with high-level operati
 
 `lzip` uses `lzip_extension` internally. The latter should only be used in advanced scenarios where fine buffer control is required.
 
-- [lzip](#lzip)
-  - [FileEncoder](#fileencoder)
-  - [BufferEncoder](#bufferencoder)
-  - [RemainingBytesError](#remainingbyteserror)
-  - [compress_to_buffer](#compress_to_buffer)
-  - [compress_to_file](#compresstofile)
-  - [decompress_buffer](#decompress_buffer)
-  - [decompress_buffer_iter](#decompress_buffer_iter)
-  - [decompress_file](#decompress_file)
-  - [decompress_file_iter](#decompress_file_iter)
-  - [decompress_file_like](#decompress_file_like)
-  - [decompress_file_like_iter](#decompress_file_like_iter)
-  - [decompress_url](#decompress_url)
-  - [decompress_url_iter](#decompress_url_iter)
-- [lzip_extension](#lzip_extension)
-  - [Decoder](#decoder)
-  - [Encoder](#encoder)
-- [Word size and remaining bytes](word-size-and-remaining-bytes)
-- [Default parameters](default-paramters)
-- [Compare options](compare-options)
+- [Quickstart](#quickstart)
+    - [Compress](#compress)
+    - [Decompress](#decompress)
+- [Documentation](#documentation)
+    - [lzip](#lzip)
+        - [FileEncoder](#fileencoder)
+        - [BufferEncoder](#bufferencoder)
+        - [RemainingBytesError](#remainingbyteserror)
+        - [compress_to_buffer](#compress_to_buffer)
+        - [compress_to_file](#compress_to_file)
+        - [decompress_buffer](#decompress_buffer)
+        - [decompress_buffer_iter](#decompress_buffer_iter)
+        - [decompress_file](#decompress_file)
+        - [decompress_file_iter](#decompress_file_iter)
+        - [decompress_file_like](#decompress_file_like)
+        - [decompress_file_like_iter](#decompress_file_like_iter)
+        - [decompress_url](#decompress_url)
+        - [decompress_url_iter](#decompress_url_iter)
+    - [lzip_extension](#lzip_extension)
+        - [Decoder](#decoder)
+        - [Encoder](#encoder)
+    - [Compare options](#compare-options)
+    - [Word size and remaining bytes](#word-size-and-remaining-bytes)
+    - [Default parameters](#default-parameters)
+- [Publish](#publish)
 
 ## lzip
 
@@ -340,7 +353,7 @@ def decompress_url_iter(
 
 Even though `lzip_extension` behaves like a conventional Python module, it is written in C++. To keep the implementation simple, only positional arguments are supported (keyword arguments do not work). The Python classes documented below are equivalent to the classes exported by this low-level implementation.
 
-You can use `lzip_extension` by importing it like any other module. *lzip.py* uses it extensively.
+You can use `lzip_extension` by importing it like any other module. _lzip.py_ uses it extensively.
 
 ### Decoder
 
@@ -417,14 +430,13 @@ class Encoder:
 
 ## Compare options
 
-The script *compare_options.py* uses the `lzip` library to compare the compression ratio of different pairs (dictionary_size, match_len_limit). It runs multiple compressions in parallel and does not store the compressed bytes. About 3 GB of RAM are required to run the script. Processing time depends on the file size and the number of processors on the machine.
+The script _compare_options.py_ uses the `lzip` library to compare the compression ratio of different pairs (dictionary_size, match_len_limit). It runs multiple compressions in parallel and does not store the compressed bytes. About 3 GB of RAM are required to run the script. Processing time depends on the file size and the number of processors on the machine.
 
 The script requires matplotlib (`pip3 install matplotlib`) to display the results.
 
 ```sh
 python3 compare_options /path/to/uncompressed/file [--chunk-size=65536]
 ```
-
 
 ## Word size and remaining bytes
 
@@ -433,6 +445,7 @@ Decoding functions take an optional parameter `word_size` that defaults to `1`. 
 Non-iter decoding functions do not provide access to the decoded buffers if the total size is not a multiple of `word_size` (only the remaining bytes).
 
 The following example decodes a file and converts the decoded bytes to 4-bytes unsigned integers:
+
 ```py
 import lzip
 import numpy
@@ -459,6 +472,7 @@ def some_function(some_parameter=None):
 ```
 
 This approach makes it possible to change default values at the module level at any time. For example:
+
 ```py
 import lzip
 
@@ -474,7 +488,7 @@ lzip_default_level = 0
 lzip.compress_to_file("/path/to/output1.lz", b"data to compress") # encoded at level 0
 ```
 
-`lzip` exports the following *default* default values:
+`lzip` exports the following _default_ default values:
 
 ```py
 default_level = 6
@@ -485,21 +499,24 @@ default_member_size = 1 << 51
 
 # Publish
 
-1. Bump the version number in *setup.py*.
+1. Bump the version number in _version.py_.
 
 2. Install Cubuzoa in a different directory (https://github.com/neuromorphicsystems/cubuzoa) to build pre-compiled versions for all major operating systems. Cubuzoa depends on VirtualBox (with its extension pack) and requires about 75 GB of free disk space.
+
 ```sh
 cd cubuzoa
 python3 cubuzoa.py provision
-python3 cubuzoa.py build /path/to/lzip --post /path/to/lzip/test.py
+python3 -m cubuzoa build /path/to/lzip --post /path/to/lzip/test.py
 ```
 
 3. Install twine
+
 ```sh
 pip3 install twine
 ```
 
 4. Upload the compiled wheels and the source code to PyPI:
+
 ```sh
 python3 setup.py sdist --dist-dir wheels
 python3 -m twine upload wheels/*

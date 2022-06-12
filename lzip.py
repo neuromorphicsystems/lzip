@@ -4,6 +4,7 @@ import socket
 import typing
 import urllib.request
 import lzip_extension
+from version import __version__ as __version__
 
 default_level: int = 6
 default_word_size: int = 1
@@ -26,11 +27,15 @@ level_to_dictionary_size_and_match_len_limit = {
 class RemainingBytesError(Exception):
     def __init__(self, word_size: int, buffer: bytes):
         self.buffer = buffer
-        super().__init__(f"The total number of bytes is not a multiple of {word_size} ({len(buffer)} remaining)")
+        super().__init__(
+            f"The total number of bytes is not a multiple of {word_size} ({len(buffer)} remaining)"
+        )
 
 
 def decompress_file_like_iter(
-    file_like, word_size: typing.Optional[int] = None, chunk_size: typing.Optional[int] = None
+    file_like,
+    word_size: typing.Optional[int] = None,
+    chunk_size: typing.Optional[int] = None,
 ):
     if word_size is None:
         word_size = default_word_size
@@ -53,7 +58,9 @@ def decompress_file_like_iter(
 
 
 def decompress_file_like(file_like, word_size=None, chunk_size=None) -> bytes:
-    return b"".join(buffer for buffer in decompress_file_like_iter(file_like, word_size, chunk_size))
+    return b"".join(
+        buffer for buffer in decompress_file_like_iter(file_like, word_size, chunk_size)
+    )
 
 
 def decompress_file_iter(path, word_size=None, chunk_size=None):
@@ -67,7 +74,9 @@ def decompress_file(path, word_size=None, chunk_size=None) -> bytes:
 
 
 def decompress_buffer_iter(buffer, word_size=None):
-    yield from decompress_file_like_iter(io.BytesIO(buffer), word_size, chunk_size=len(buffer))
+    yield from decompress_file_like_iter(
+        io.BytesIO(buffer), word_size, chunk_size=len(buffer)
+    )
 
 
 def decompress_buffer(buffer, word_size=None) -> bytes:
@@ -75,25 +84,47 @@ def decompress_buffer(buffer, word_size=None) -> bytes:
 
 
 def decompress_url_iter(
-    url, data=None, timeout=None, cafile=None, capath=None, context=None, word_size=None, chunk_size=None
+    url,
+    data=None,
+    timeout=None,
+    cafile=None,
+    capath=None,
+    context=None,
+    word_size=None,
+    chunk_size=None,
 ):
     if timeout is None:
         timeout = socket._GLOBAL_DEFAULT_TIMEOUT
-    with urllib.request.urlopen(url, data, timeout, cafile=cafile, capath=capath, context=context) as response:
+    with urllib.request.urlopen(
+        url, data, timeout, cafile=cafile, capath=capath, context=context
+    ) as response:
         yield from decompress_file_like_iter(response, word_size, chunk_size)
 
 
 def decompress_url(
-    url, data=None, timeout=None, cafile=None, capath=None, context=None, word_size=None, chunk_size=None
+    url,
+    data=None,
+    timeout=None,
+    cafile=None,
+    capath=None,
+    context=None,
+    word_size=None,
+    chunk_size=None,
 ) -> bytes:
     if timeout is None:
         timeout = socket._GLOBAL_DEFAULT_TIMEOUT
-    with urllib.request.urlopen(url, data, timeout, cafile=cafile, capath=capath, context=context) as response:
+    with urllib.request.urlopen(
+        url, data, timeout, cafile=cafile, capath=capath, context=context
+    ) as response:
         return decompress_file_like(response, word_size, chunk_size)
 
 
 class BufferEncoder:
-    def __init__(self, level: typing.Optional[int] = None, member_size: typing.Optional[int] = None):
+    def __init__(
+        self,
+        level: typing.Optional[int] = None,
+        member_size: typing.Optional[int] = None,
+    ):
         if level is None:
             level = default_level
         assert isinstance(level, (list, tuple, int))
@@ -102,12 +133,16 @@ class BufferEncoder:
         else:
             assert level >= 0 and level < 10
             level = level_to_dictionary_size_and_match_len_limit[level]
-        assert isinstance(level[0], int) and level[0] >= (1 << 12) and level[0] < (1 << 29)
+        assert (
+            isinstance(level[0], int) and level[0] >= (1 << 12) and level[0] < (1 << 29)
+        )
         assert isinstance(level[1], int) and level[1] >= 5 and level[1] <= 273
         dictionary_size, match_len_limit = level
         if member_size is None:
             member_size = default_member_size
-        self.encoder = lzip_extension.Encoder(dictionary_size, match_len_limit, member_size)
+        self.encoder = lzip_extension.Encoder(
+            dictionary_size, match_len_limit, member_size
+        )
 
     def compress(self, buffer: bytes) -> None:
         return self.encoder.compress(buffer)
@@ -118,7 +153,9 @@ class BufferEncoder:
         return result
 
 
-def compress_to_buffer(buffer, level: typing.Optional[int] = None, member_size: typing.Optional[int] = None) -> bytes:
+def compress_to_buffer(
+    buffer, level: typing.Optional[int] = None, member_size: typing.Optional[int] = None
+) -> bytes:
     if level is None:
         level = default_level
     encoder = BufferEncoder(level, member_size)
@@ -144,10 +181,15 @@ class FileEncoder:
             dictionary_size, match_len_limit = level
         else:
             assert level >= 0 and level < 10
-            dictionary_size, match_len_limit = level_to_dictionary_size_and_match_len_limit[level]
+            (
+                dictionary_size,
+                match_len_limit,
+            ) = level_to_dictionary_size_and_match_len_limit[level]
         if member_size is None:
             member_size = default_member_size
-        self.encoder = lzip_extension.Encoder(dictionary_size, match_len_limit, member_size)
+        self.encoder = lzip_extension.Encoder(
+            dictionary_size, match_len_limit, member_size
+        )
         self.file = open(path, "wb")
 
     def compress(self, buffer: bytes) -> None:
@@ -168,7 +210,10 @@ class FileEncoder:
 
 
 def compress_to_file(
-    path, buffer: bytes, level: typing.Optional[int] = None, member_size: typing.Optional[int] = None
+    path,
+    buffer: bytes,
+    level: typing.Optional[int] = None,
+    member_size: typing.Optional[int] = None,
 ) -> None:
     if level is None:
         level = default_level
