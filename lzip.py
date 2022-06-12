@@ -5,6 +5,7 @@ import typing
 import urllib.request
 import lzip_extension
 from version import __version__ as __version__
+from version import __lzlib_version__ as __lzlib_version__
 
 default_level: int = 6
 default_word_size: int = 1
