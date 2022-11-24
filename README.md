@@ -112,17 +112,17 @@ The present package contains two libraries. `lzip` deals with high-level operati
         - [FileEncoder](#fileencoder)
         - [BufferEncoder](#bufferencoder)
         - [RemainingBytesError](#remainingbyteserror)
-        - [compress_to_buffer](#compress_to_buffer)
-        - [compress_to_file](#compress_to_file)
-        - [decompress_buffer](#decompress_buffer)
-        - [decompress_buffer_iter](#decompress_buffer_iter)
-        - [decompress_file](#decompress_file)
-        - [decompress_file_iter](#decompress_file_iter)
-        - [decompress_file_like](#decompress_file_like)
-        - [decompress_file_like_iter](#decompress_file_like_iter)
-        - [decompress_url](#decompress_url)
-        - [decompress_url_iter](#decompress_url_iter)
-    - [lzip_extension](#lzip_extension)
+        - [compress\_to\_buffer](#compress_to_buffer)
+        - [compress\_to\_file](#compress_to_file)
+        - [decompress\_buffer](#decompress_buffer)
+        - [decompress\_buffer\_iter](#decompress_buffer_iter)
+        - [decompress\_file](#decompress_file)
+        - [decompress\_file\_iter](#decompress_file_iter)
+        - [decompress\_file\_like](#decompress_file_like)
+        - [decompress\_file\_like\_iter](#decompress_file_like_iter)
+        - [decompress\_url](#decompress_url)
+        - [decompress\_url\_iter](#decompress_url_iter)
+    - [lzip\_extension](#lzip_extension)
         - [Decoder](#decoder)
         - [Encoder](#encoder)
     - [Compare options](#compare-options)
@@ -501,23 +501,4 @@ default_member_size = 1 << 51
 
 1. Bump the version number in _version.py_.
 
-2. Install Cubuzoa in a different directory (https://github.com/neuromorphicsystems/cubuzoa) to build pre-compiled versions for all major operating systems. Cubuzoa depends on VirtualBox (with its extension pack) and requires about 75 GB of free disk space.
-
-```sh
-cd cubuzoa
-python3 cubuzoa.py provision
-python3 -m cubuzoa build /path/to/lzip --post /path/to/lzip/test.py
-```
-
-3. Install twine
-
-```sh
-pip3 install twine
-```
-
-4. Upload the compiled wheels and the source code to PyPI:
-
-```sh
-python3 setup.py sdist --dist-dir wheels
-python3 -m twine upload wheels/*
-```
+2. Create a new release on GitHub.

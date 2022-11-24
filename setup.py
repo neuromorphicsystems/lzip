@@ -1,21 +1,24 @@
-import distutils.core
 import pathlib
 import setuptools
+import setuptools.extension
+import setuptools.command.build_ext
 import sys
 
-with open("README.md") as file:
+dirname = pathlib.Path(__file__).resolve().parent
+
+with open(dirname / "README.md") as file:
     long_description = file.read()
 
 extra_compile_args = []
 extra_link_args = []
 if sys.platform == "linux":
-    extra_compile_args += ["-std=c++11"]
-    extra_link_args += ["-std=c++11", "-lstdc++"]
+    extra_compile_args += ["-std=c++17"]
+    extra_link_args += ["-std=c++17", "-lstdc++"]
 elif sys.platform == "darwin":
-    extra_compile_args += ["-std=c++11", "-stdlib=libc++"]
-    extra_link_args += ["-std=c++11", "-stdlib=libc++"]
+    extra_compile_args += ["-std=c++17", "-stdlib=libc++"]
+    extra_link_args += ["-std=c++17", "-stdlib=libc++"]
 
-exec(open("version.py").read())
+exec(open(dirname / "version.py").read())
 setuptools.setup(
     name="lzip",
     version=__version__,  # type: ignore
@@ -32,12 +35,12 @@ setuptools.setup(
     ],
     py_modules=["lzip"],
     ext_modules=[  # type: ignore
-        distutils.core.Extension(
+        setuptools.extension.Extension(
             "lzip_extension",
             language="cpp",
             sources=[
                 "lzip_extension.cpp",
-                str(pathlib.Path("third_party") / "lzlib" / "lzlib.cpp"),
+                str(dirname / "third_party" / "lzlib" / "lzlib.cpp"),
             ],
             extra_compile_args=extra_compile_args,
             extra_link_args=extra_link_args,
