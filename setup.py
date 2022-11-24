@@ -3,7 +3,6 @@ import setuptools
 import setuptools.extension
 import setuptools.command.build_ext
 import sys
-import source.version
 
 dirname = pathlib.Path(__file__).resolve().parent
 
@@ -19,9 +18,13 @@ elif sys.platform == "darwin":
     extra_compile_args += ["-std=c++17", "-stdlib=libc++"]
     extra_link_args += ["-std=c++17", "-stdlib=libc++"]
 
+
+exec(
+    open(dirname / "source" / "version.py").read()
+)  # import would fail because the extension is not built yet
 setuptools.setup(
     name="lzip",
-    version=source.version.__version__,
+    version=__version__,  # type: ignore
     url="https://github.com/neuromorphicsystems/lzip",
     author="Alexandre Marcireau",
     author_email="alexandre.marcireau@gmail.com",
