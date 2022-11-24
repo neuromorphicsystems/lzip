@@ -33,7 +33,7 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    py_modules=["lzip"],
+    py_modules=["lzip", "version"],
     ext_modules=[  # type: ignore
         setuptools.extension.Extension(
             "lzip_extension",
