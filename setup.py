@@ -43,7 +43,7 @@ setuptools.setup(
             "lzip_extension",
             language="cpp",
             sources=[
-                "lzip_extension.cpp",
+                str(dirname / "source" / "lzip_extension.cpp"),
                 str(dirname / "third_party" / "lzlib" / "lzlib.cpp"),
             ],
             extra_compile_args=extra_compile_args,
