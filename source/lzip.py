@@ -93,7 +93,7 @@ def decompress_url_iter(
     chunk_size=None,
 ):
     if timeout is None:
-        timeout = socket._GLOBAL_DEFAULT_TIMEOUT
+        timeout = socket._GLOBAL_DEFAULT_TIMEOUT  # type: ignore
     with urllib.request.urlopen(
         url, data, timeout, cafile=cafile, capath=capath, context=context
     ) as response:
@@ -111,7 +111,7 @@ def decompress_url(
     chunk_size=None,
 ) -> bytes:
     if timeout is None:
-        timeout = socket._GLOBAL_DEFAULT_TIMEOUT
+        timeout = socket._GLOBAL_DEFAULT_TIMEOUT  # type: ignore
     with urllib.request.urlopen(
         url, data, timeout, cafile=cafile, capath=capath, context=context
     ) as response:
@@ -132,6 +132,7 @@ class BufferEncoder:
         else:
             assert level >= 0 and level < 10
             level = level_to_dictionary_size_and_match_len_limit[level]
+        assert isinstance(level, (list, tuple))
         assert (
             isinstance(level[0], int) and level[0] >= (1 << 12) and level[0] < (1 << 29)
         )
@@ -144,7 +145,7 @@ class BufferEncoder:
         )
 
     def compress(self, buffer: bytes) -> None:
-        return self.encoder.compress(buffer)
+        return self.encoder.compress(buffer)  # type: ignore
 
     def finish(self) -> bytes:
         result = self.encoder.finish()
@@ -159,7 +160,7 @@ def compress_to_buffer(
         level = default_level
     encoder = BufferEncoder(level, member_size)
     result = encoder.compress(buffer)
-    result += encoder.finish()
+    result += encoder.finish()  # type: ignore
     return result
 
 
@@ -192,10 +193,10 @@ class FileEncoder:
         self.file = open(path, "wb")
 
     def compress(self, buffer: bytes) -> None:
-        self.file.write(self.encoder.compress(buffer))
+        self.file.write(self.encoder.compress(buffer))  # type: ignore
 
     def close(self) -> None:
-        self.file.write(self.encoder.finish())
+        self.file.write(self.encoder.finish())  # type: ignore
         self.encoder = None
         self.file.close()
         self.file = None
