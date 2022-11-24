@@ -3,6 +3,7 @@ import setuptools
 import setuptools.extension
 import setuptools.command.build_ext
 import sys
+import source.version
 
 dirname = pathlib.Path(__file__).resolve().parent
 
@@ -18,10 +19,9 @@ elif sys.platform == "darwin":
     extra_compile_args += ["-std=c++17", "-stdlib=libc++"]
     extra_link_args += ["-std=c++17", "-stdlib=libc++"]
 
-exec(open(dirname / "version.py").read())
 setuptools.setup(
     name="lzip",
-    version=__version__,  # type: ignore
+    version=source.version.__version__,
     url="https://github.com/neuromorphicsystems/lzip",
     author="Alexandre Marcireau",
     author_email="alexandre.marcireau@gmail.com",
@@ -33,8 +33,9 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    py_modules=["lzip", "version"],
-    ext_modules=[  # type: ignore
+    packages=["lzip"],
+    package_dir={"lzip": "source"},
+    ext_modules=[
         setuptools.extension.Extension(
             "lzip_extension",
             language="cpp",
